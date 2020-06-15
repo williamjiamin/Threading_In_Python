@@ -1,6 +1,6 @@
 # Created by william from lexueoude.com. 更多正版技术视频讲解，公众号：乐学FinTech
 import time
-import threading
+import concurrent.futures
 
 start = time.perf_counter()
 
@@ -9,20 +9,14 @@ start = time.perf_counter()
 def what_you_want_the_computer_to_do(seconds):
     print('-------开始执行某一个程序了（程序执行需要1秒钟）-------\n')
     time.sleep(seconds)
-    print('----------------程序已经执行完毕-------------------\n')
+    return '----------------程序已经执行完毕-------------------\n'
 
 
-the_pool_of_threads = []
-how_many_threads_do_you_want = 100
-for _ in range(how_many_threads_do_you_want):
-    every_thread = threading.Thread(target=what_you_want_the_computer_to_do, args=[5])
-    every_thread.start()
-    the_pool_of_threads.append(every_thread)
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    results = [executor.submit(what_you_want_the_computer_to_do, 1) for _ in range(10)]
 
-# print(the_pool_of_threads)
-
-for thread in the_pool_of_threads:
-    thread.join()
+    for f in concurrent.futures.as_completed(results):
+        print(f.result())
 
 finish = time.perf_counter()
 
